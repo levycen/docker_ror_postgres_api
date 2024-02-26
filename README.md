@@ -154,3 +154,13 @@ docker compose run --rm rails_app rake db:migration
 ```bash
 docker compose up
 ```
+
+### Consumir el create del controller
+```
+curl -X POST -H "Content-Type: application/json" http://localhost:3000/api/v1/animals
+```
+
+### Consumir el index del controller
+```
+curl http://localhost:3000/api/v1/animals  
+```
