@@ -1,0 +1,51 @@
+version: "3.8"
+name: "ror_postgres"
+services:
+  rails_app:
+    image: ror_postgres-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/app
+      - bundler_gems:/usr/local/bundle/
+    ports:
+      - '3000:3000'
+    depends_on:
+      - database
+      - redis
+    environment:
+      POSTGRES_USER: user_postgres
+      POSTGRES_PASSWORD: passdev
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST_SERVICE: database
+
+  database:
+    restart: on-failure
+    image: postgres:14
+    command: ["postgres", "-c", "log_statement=all"]
+    environment:
+      POSTGRES_USER: user_postgres
+      POSTGRES_PASSWORD: passdev
+      POSTGRES_PORT: 5432
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  redis:
+    image: redis:6
+    ports:
+      - 6379:6379
+
+volumes:
+  bundler_gems:
+  postgres_data:
